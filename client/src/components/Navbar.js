@@ -30,25 +30,28 @@ function Navbar() {
     return location.pathname === path;
   }
 
-  const navLinks = [
-    { path: '/dashboard', label: 'Dashboard', icon: '📊', title: 'View your summary' },
-    { path: '/workout/new', label: 'New Workout', icon: '➕', title: 'Create a new workout' },
-    { path: '/workout/history', label: 'History', icon: '📋', title: 'Workout history' },
-    { path: '/profile', label: 'Profile', icon: '👤', title: 'Your profile' },
-  ];
+ const navLinks = [
+  { path: '/home', label: 'Home', title: 'Welcome Page' },
+  { path: '/dashboard', label: 'Dashboard', title: 'View your summary' },
+  { path: '/workout/new', label: 'New Workout', title: 'Create a new workout' },
+  { path: '/workout/history', label: 'History', title: 'Workout history' },
+  { path: '/profile', label: 'Profile', title: 'Your profile' },
+];
+
 
   return (
-    <nav className="bg-gradient-to-r from-blue-700 to-blue-800 text-white shadow-lg border-b border-blue-600">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <nav className="bg-gradient-to-r from-teal-700 to-teal-800 text-white shadow-lg border-b border-teal-600">
+<div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-6">
         <div className="flex justify-between items-center h-16">
-          {/* Logo */}
-          <Link
-            to="/"
-            className="flex items-center space-x-2 text-xl font-bold hover:text-blue-200 transition-colors duration-200"
-          >
-            <span className="text-2xl animate-pulse">💪🏽</span>
-            <span>FitFlex</span>
-          </Link>
+          
+         <Link
+  to="/"
+  className="flex items-center space-x-2 text-xl font-bold hover:text-blue-200 transition-colors duration-200"
+>
+  <span className="text-2xl animate-pulse">💪🏽</span>
+  <span>FitFlex</span>
+</Link>
+
 
           {token && (
             <>
@@ -61,8 +64,8 @@ function Navbar() {
                     title={title}
                     className={`group flex items-center space-x-1 px-3 py-2 rounded-md text-sm font-medium transition-all duration-200 ${
                       isActiveRoute(path)
-                        ? 'bg-blue-600 text-white underline decoration-white'
-                        : 'hover:bg-blue-600 hover:text-white'
+                        ? 'bg-teal-600 text-white underline decoration-white'
+                        : 'hover:bg-teal-600 hover:text-white'
                     }`}
                   >
                     <span className="transition-transform group-hover:scale-110">{icon}</span>
@@ -70,8 +73,8 @@ function Navbar() {
                   </Link>
                 ))}
 
-                {/* User Section with Avatar */}
-                <div className="flex items-center space-x-3 ml-6 pl-6 border-l border-blue-600">
+                {/* User Section with Avatar here*/}
+                <div className="flex items-center space-x-3 ml-6 pl-6 border-l border-teal-600">
                   {user && (
                     <>
                       <img
@@ -86,7 +89,7 @@ function Navbar() {
                   )}
                   <button
                     onClick={handleLogout}
-                    className="bg-red-500 hover:bg-red-600 px-4 py-2 rounded-md text-sm font-medium transition-colors duration-200 flex items-center space-x-1"
+                    className="bg--500 hover:bg-black-600 px-4 py-2 rounded-md text-sm font-medium transition-colors duration-200 flex items-center space-x-1"
                   >
                     <span>🚪</span>
                     <span>Logout</span>
@@ -98,7 +101,7 @@ function Navbar() {
               <div className="md:hidden">
                 <button
                   onClick={toggleMenu}
-                  className="p-2 rounded-md hover:bg-blue-600 transition-colors duration-200"
+                  className="p-2 rounded-md hover:bg-teal-600 transition-colors duration-200"
                 >
                   <svg
                     className="w-6 h-6"
@@ -124,8 +127,8 @@ function Navbar() {
                 to="/login"
                 className={`px-4 py-2 rounded-md text-sm font-medium transition-colors duration-200 ${
                   isActiveRoute('/login')
-                    ? 'bg-blue-600 text-white'
-                    : 'hover:bg-blue-600 hover:text-white'
+                    ? 'bg-teal-600 text-white'
+                    : 'hover:bg-teal-600 hover:text-white'
                 }`}
               >
                 Login
@@ -134,8 +137,8 @@ function Navbar() {
                 to="/register"
                 className={`px-4 py-2 rounded-md text-sm font-medium border border-white transition-all duration-200 ${
                   isActiveRoute('/register')
-                    ? 'bg-white text-blue-700'
-                    : 'hover:bg-white hover:text-blue-700'
+                    ? 'bg-white text-teal-700'
+                    : 'hover:bg-white hover:text-teal-700'
                 }`}
               >
                 Sign Up
@@ -144,10 +147,10 @@ function Navbar() {
           )}
         </div>
 
-        {/* Mobile Navigation */}
+        {/* Mobile Navigation code here */}
         {token && isMenuOpen && (
           <div className="md:hidden">
-            <div className="px-2 pt-2 pb-3 space-y-1 border-t border-blue-600">
+            <div className="px-2 pt-2 pb-3 space-y-1 border-t border-teal-600">
               {navLinks.map(({ path, label, icon }) => (
                 <Link
                   key={path}
@@ -155,8 +158,8 @@ function Navbar() {
                   onClick={() => setIsMenuOpen(false)}
                   className={`flex items-center space-x-2 px-3 py-2 rounded-md text-base font-medium transition-all duration-200 ${
                     isActiveRoute(path)
-                      ? 'bg-blue-600 text-white'
-                      : 'hover:bg-blue-600 hover:text-white'
+                      ? 'bg-teal-600 text-white'
+                      : 'hover:bg-teal-600 hover:text-white'
                   }`}
                 >
                   <span>{icon}</span>
@@ -180,7 +183,7 @@ function Navbar() {
                 )}
                 <button
                   onClick={handleLogout}
-                  className="w-full text-left flex items-center space-x-2 px-3 py-2 rounded-md text-base font-medium bg-red-500 hover:bg-red-600 transition-colors duration-200"
+                  className="w-full text-left flex items-center space-x-2 px-3 py-2 rounded-md text-base font-medium bg-black-500 hover:bg-black-600 transition-colors duration-200"
                 >
                   <span>🚪</span>
                   <span>Logout</span>
