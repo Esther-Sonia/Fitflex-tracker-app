@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 function Register() {
   const navigate = useNavigate();
 
-  const [step, setStep] = useState(1); // current step
+  const [step, setStep] = useState(1); 
   const [formData, setFormData] = useState({
     username: '',
     email: '',
@@ -25,7 +25,6 @@ function Register() {
 
   function handleNext(e) {
     e.preventDefault();
-    // You can add validation here if needed
     if (!formData.username || !formData.email || !formData.password) {
       setError('Please fill in all fields.');
       return;
@@ -140,7 +139,7 @@ function Register() {
 
         <button
           type="submit"
-          className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700"
+          className="w-full bg-teal-600 text-white py-2 rounded hover:bg-teal-700"
         >
           {step === 1 ? 'Next' : 'Register'}
         </button>
