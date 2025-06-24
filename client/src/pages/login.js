@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import ResetPassword from '../components/ResetPassword'; 
 
 function Login() {
   const navigate = useNavigate();
@@ -10,6 +11,7 @@ function Login() {
   });
 
   const [error, setError] = useState('');
+  const [showReset, setShowReset] = useState(false); 
 
   function handleChange(e) {
     setFormData({
@@ -23,7 +25,7 @@ function Login() {
     setError('');
 
     try {
-const response = await fetch("http://localhost:8000/login", {
+      const response = await fetch("http://localhost:8000/login", {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -34,10 +36,9 @@ const response = await fetch("http://localhost:8000/login", {
       const data = await response.json();
 
       if (response.ok) {
-        //  Store token and navigate also store email ansd username
         localStorage.setItem('token', data.access_token);
-localStorage.setItem("username", data.username); 
-        navigate('/dashboard');
+        localStorage.setItem('username', data.username);
+        navigate('/');
       } else {
         setError(data.detail || 'Login failed');
       }
@@ -76,12 +77,23 @@ localStorage.setItem("username", data.username);
 
         <button
           type="submit"
-          className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700"
+          className="w-full bg-teal-600 text-white py-2 rounded hover:bg-teal-700"
         >
           Login
         </button>
       </form>
-      
+
+      {/* Reset password toggle buttton here */}
+      <div className="mt-4 text-center">
+        <button
+          onClick={() => setShowReset(!showReset)}
+          className="text-teal-600 text-sm underline"
+        >
+          {showReset ? 'Hide Reset Form' : 'Forgot Password?'}
+        </button>
+
+        {showReset && <ResetPassword />}
+      </div>
     </div>
   );
 }
