@@ -1,9 +1,8 @@
-// client/src/router.jsx
-
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 
 // Pages
-import Home from './pages/Home';
+import Home from './pages/Home'; // Protected Welcome Page
+import Landingpage from './pages/Landingpage'; // Public with Login/Register
 import Login from './pages/Login';
 import Register from './pages/register';
 import Dashboard from './pages/Dashboard';
@@ -11,7 +10,7 @@ import NewWorkout from './pages/workoutform';
 import WorkoutHistory from './pages/workouthistory';
 import Profile from './pages/profile';
 
-import Navbar from './components/Navbar'; 
+import Navbar from './components/Navbar';
 
 function ProtectedRoute({ children }) {
   const token = localStorage.getItem('token');
@@ -21,19 +20,21 @@ function ProtectedRoute({ children }) {
 function AppRouter() {
   return (
     <Router>
-      <Navbar /> 
+      <Navbar />
       <Routes>
         {/* Public routes */}
-        <Route path="/" element={<Home />} />
+        <Route path="/landing" element={<Landingpage />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
 
-        {/* Protected  routes*/}
+        {/* Protected routes */}
+        <Route path="/" element={<ProtectedRoute><Home /></ProtectedRoute>} />
         <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
         <Route path="/workout/new" element={<ProtectedRoute><NewWorkout /></ProtectedRoute>} />
         <Route path="/workout/history" element={<ProtectedRoute><WorkoutHistory /></ProtectedRoute>} />
         <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
 
+        {/* Catch-all */}
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>
     </Router>
