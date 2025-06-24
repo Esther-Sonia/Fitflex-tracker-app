@@ -1,62 +1,96 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import {
+  BarChart3,
+  CalendarCheck,
+  Flame,
+  Clock,
+  TrendingUp,
+} from 'lucide-react';
 
 function Dashboard() {
   const navigate = useNavigate();
-  const [username, setUsername] = useState('');
+  const [stats, setStats] = useState(null);
 
   useEffect(() => {
-    const storedUsername = localStorage.getItem('username');
-    if (!storedUsername) {
+    const token = localStorage.getItem('token');
+    if (!token) {
       navigate('/login');
     } else {
-      setUsername(storedUsername);
+      fetchStats();
     }
   }, [navigate]);
 
-  function handleLogout() {
-    localStorage.clear();
-    navigate('/login');
+  async function fetchStats() {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await axios.get("http://localhost:8000/dashboard/stats", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setStats(response.data);
+    } catch (error) {
+      console.error("Error fetching stats:", error);
+    }
+  }
+
+
+  function formatDuration(minutes) {
+    const hrs = Math.floor(minutes / 60);
+    const mins = minutes % 60;
+    return `${hrs}h ${mins}m`;
   }
 
   return (
-    <div className="max-w-2xl mx-auto mt-10 p-6 bg-white shadow-xl rounded">
-      <h1 className="text-3xl font-bold mb-4 text-center text-blue-700">
-        Welcome {username || 'Back'}! 🏋🏽‍♀
-      </h1>
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 py-8 px-4">
+      <div className="max-w-4xl mx-auto flex flex-col gap-10">
 
-      <p className="text-center text-gray-700 mb-6">
-        You’re logged in. Ready to track your fitness journey 
-      </p>
+        {stats ? (
+<div className="grid md:grid-cols-2 gap-6">
+            {/* Total Workouts here */}
+            <div className="bg-gradient-to-br from-indigo-500 to-indigo-600 p-6 rounded-2xl shadow-lg text-white">
+              <div className="flex justify-between items-center mb-3">
+                <BarChart3 className="w-6 h-6" />
+                <TrendingUp className="w-4 h-4 text-white/70" />
+              </div>
+              <p className="text-sm text-white/80">Total Workouts</p>
+              <h2 className="text-3xl font-bold">{stats.total_workouts}</h2>
+            </div>
 
-      <div className="flex flex-col space-y-4">
-        <button
-          onClick={() => navigate('/workout/new')}
-          className="bg-green-600 text-white py-2 rounded hover:bg-green-700"
-        >
-          Start New Workout
-        </button>
+            {/* Total Exercises here */}
+            <div className="bg-gradient-to-br from-pink-500 to-rose-600 p-6 rounded-2xl shadow-lg text-white">
+              <div className="flex justify-between items-center mb-3">
+                <Flame className="w-6 h-6" />
+                <TrendingUp className="w-4 h-4 text-white/70" />
+              </div>
+              <p className="text-sm text-white/80">Total Exercises</p>
+              <h2 className="text-3xl font-bold">{stats.total_exercises}</h2>
+            </div>
 
-        <button
-          onClick={() => navigate('/workout/history')}
-          className="bg-purple-600 text-white py-2 rounded hover:bg-purple-700"
-        >
-          View Workout History
-        </button>
+            {/* Latest Workout here */}
+            <div className="bg-gradient-to-br from-emerald-500 to-teal-600 p-6 rounded-2xl shadow-lg text-white">
+              <div className="flex justify-between items-center mb-3">
+                <CalendarCheck className="w-6 h-6" />
+                <TrendingUp className="w-4 h-4 text-white/70" />
+              </div>
+              <p className="text-sm text-white/80">Latest Workout</p>
+              <h3 className="text-lg font-semibold">{stats.latest_workout.name || 'N/A'}</h3>
+              <p className="text-white/70 text-sm">{stats.latest_workout.date || 'No recent workout'}</p>
+            </div>
 
-        <button
-          onClick={() => navigate('/profile')}
-          className="bg-blue-600 text-white py-2 rounded hover:bg-blue-700"
-        >
-          My Profile
-        </button>
-
-        <button
-          onClick={handleLogout}
-          className="bg-red-600 text-white py-2 rounded hover:bg-red-700"
-        >
-          Logout
-        </button>
+            {/* Total Time Spent */}
+            <div className="bg-gradient-to-br from-cyan-500 to-sky-600 p-6 rounded-2xl shadow-lg text-white">
+              <div className="flex justify-between items-center mb-3">
+                <Clock className="w-6 h-6" />
+                <TrendingUp className="w-4 h-4 text-white/70" />
+              </div>
+              <p className="text-sm text-white/80">Total Time Spent</p>
+              <h2 className="text-2xl font-bold">{formatDuration(stats.total_time_spent_minutes)}</h2>
+            </div>
+          </div>
+        ) : (
+          <div className="text-center text-white/70">Loading stats...</div>
+        )}
       </div>
     </div>
   );
