@@ -1,8 +1,8 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 
 // Pages
-import Home from './pages/Home'; // Protected Welcome Page
-import Landingpage from './pages/Landingpage'; // Public with Login/Register
+import Home from './pages/Home'; 
+import Landingpage from './pages/Landingpage';
 import Login from './pages/Login';
 import Register from './pages/register';
 import Dashboard from './pages/Dashboard';
@@ -34,7 +34,6 @@ function AppRouter() {
         <Route path="/workout/history" element={<ProtectedRoute><WorkoutHistory /></ProtectedRoute>} />
         <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
 
-        {/* Catch-all */}
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>
     </Router>
