@@ -25,7 +25,7 @@ function Login() {
     setError('');
 
     try {
-      const response = await fetch("https://fitflex-backend.onrender.com/login", {
+      const response = await fetch("https://fitflex-tracker-app-backend.onrender.com/login", {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'

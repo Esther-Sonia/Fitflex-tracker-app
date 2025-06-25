@@ -14,7 +14,7 @@ function WorkoutHistory() {
   const fetchWorkouts = async () => {
     const token = localStorage.getItem("token");
     try {
-      const response = await axios.get('https://fitflex-backend.onrender.com/workouts', {
+      const response = await axios.get('https://fitflex-tracker-app-backend.onrender.com/workouts', {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -39,7 +39,7 @@ function WorkoutHistory() {
     };
 
     try {
-      await axios.put(`https://fitflex-backend.onrender.com/workouts/${id}`, formattedPayload, {
+      await axios.put(`https://fitflex-tracker-app-backend.onrender.com/workouts/${id}`, formattedPayload, {
         headers: {
           Authorization: `Bearer ${token}`,
           'Content-Type': 'application/json',
@@ -61,7 +61,7 @@ function WorkoutHistory() {
     if (!window.confirm("Are you sure you want to delete this workout?")) return;
 
     try {
-      await axios.delete(`https://fitflex-backend.onrender.com/workouts/${id}`, {
+      await axios.delete(`https://fitflex-tracker-app-backend.onrender.com/workouts/${id}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
