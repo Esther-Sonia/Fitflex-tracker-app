@@ -11,8 +11,8 @@ app = FastAPI()
 app.add_middleware(
     CORSMiddleware,
      allow_origins=[
-        "http://localhost:3000",                      # Local frontend
-        "https://fitflex-tracker-app.vercel.app"      # Deployed Vercel frontend
+        "http://localhost:3000",                      
+        "https://fitflex-tracker-app.onrender.com"     
     ], 
     allow_credentials=True,
     allow_methods=["*"],
