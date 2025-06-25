@@ -38,7 +38,7 @@ function NewWorkout() {
   useEffect(() => {
     async function fetchExercises() {
       try {
-        const response = await fetch('http://localhost:8000/exercises');
+        const response = await fetch('https://fitflex-backend.onrender.com/exercises');
         const data = await response.json();
         setExercises(data);
       } catch (error) {
@@ -109,7 +109,7 @@ function NewWorkout() {
       exercises: selectedExercises
     };
 
-    fetch('http://localhost:8000/workouts', {
+    fetch('https://fitflex-backend.onrender.com/workouts', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

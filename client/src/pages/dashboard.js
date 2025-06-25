@@ -25,7 +25,7 @@ function Dashboard() {
   async function fetchStats() {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.get("http://localhost:8000/dashboard/stats", {
+      const response = await axios.get("https://fitflex-backend.onrender.com/dashboard/stats", {
         headers: { Authorization: `Bearer ${token}` },
       });
       setStats(response.data);
