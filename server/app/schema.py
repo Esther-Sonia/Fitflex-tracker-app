@@ -1,4 +1,4 @@
-from pydantic import BaseModel, validator
+from pydantic import BaseModel, validator, EmailStr
 from typing import List, Optional
 from datetime import date
 
@@ -19,6 +19,15 @@ class Token(BaseModel):
     token_type: str
     username: str  
 
+
+class ResetPasswordRequest(BaseModel):
+    email: EmailStr
+
+class ResetPasswordData(BaseModel):
+    email: EmailStr
+    new_password: str
+
+
 class WorkoutExerciseCreate(BaseModel):
     exercise_id: int
     duration: int 
@@ -38,6 +47,18 @@ class WorkoutCreate(BaseModel):
     @validator('date')
     def validate_date(cls, v):
     
+        from datetime import datetime
+        try:
+            return datetime.strptime(v, '%Y-%m-%d').date()
+        except ValueError:
+            raise ValueError('Date must be in YYYY-MM-DD format')
+class WorkoutUpdate(BaseModel):
+    name: str
+    date: str  
+    exercises: List[WorkoutExerciseCreate]
+    
+    @validator('date')
+    def validate_date(cls, v):
         from datetime import datetime
         try:
             return datetime.strptime(v, '%Y-%m-%d').date()
