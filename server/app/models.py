@@ -4,7 +4,7 @@ from sqlalchemy.orm import relationship
 from .config import Base
 
 class User(Base):
-    _tablename_ = "users"
+    __tablename__ = "users"
     id = Column(Integer, primary_key=True, index=True)
     username = Column(String, unique=True, index=True)
     email = Column(String, unique=True, index=True)
@@ -17,7 +17,7 @@ class User(Base):
 
 
 class Workout(Base):
-    _tablename_ = "workouts"
+    __tablename__ = "workouts"
     id = Column(Integer, primary_key=True)
     name = Column(String)
     date = Column(Date)
@@ -28,7 +28,7 @@ class Workout(Base):
 
 
 class Exercise(Base):
-    _tablename_ = "exercises"
+    __tablename__ = "exercises"
     id = Column(Integer, primary_key=True)
     name = Column(String)
     category = Column(String)
@@ -38,7 +38,7 @@ class Exercise(Base):
 
 
 class WorkoutExercise(Base):
-    _tablename_ = "workout_exercises"
+    __tablename__ = "workout_exercises"
     id = Column(Integer, primary_key=True)
     workout_id = Column(Integer, ForeignKey("workouts.id"))
     exercise_id = Column(Integer, ForeignKey("exercises.id"))
