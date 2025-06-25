@@ -14,7 +14,7 @@ function Profile() {
         setError(null);
 
         const token = localStorage.getItem('token');
-        const response = await axios.get('http://localhost:8000/me', {
+        const response = await axios.get('https://fitflex-backend.onrender.com/me', {
           headers: {
             Authorization: `Bearer ${token}`,
           },
