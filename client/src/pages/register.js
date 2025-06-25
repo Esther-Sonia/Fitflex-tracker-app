@@ -44,7 +44,7 @@ function Register() {
     };
 
     try {
-      const response = await fetch("https://fitflex-backend.onrender.com/register", {
+      const response = await fetch("https://fitflex-tracker-app-backend.onrender.com/register", {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
