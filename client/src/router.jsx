@@ -3,9 +3,9 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 // Pages
 import Home from './pages/Home'; 
 import Landingpage from './pages/Landingpage';
-import Login from './pages/Login';
+import Login from './pages/login';
 import Register from './pages/register';
-import Dashboard from './pages/Dashboard';
+import Dashboard from './pages/dashboard';
 import NewWorkout from './pages/workoutform';
 import WorkoutHistory from './pages/workouthistory';
 import Profile from './pages/profile';
