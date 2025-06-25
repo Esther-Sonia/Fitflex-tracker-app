@@ -3,10 +3,13 @@ from sqlalchemy.orm import Session
 from datetime import timedelta, datetime
 from fastapi.security import OAuth2PasswordBearer
 from jose import JWTError, jwt
+from passlib.context import CryptContext
 
 from . import schema, crud, config, models
+from .schema import ResetPasswordRequest, ResetPasswordData
 from .config import get_db
 from .models import User
+from sqlalchemy import func
 
 router = APIRouter()
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
@@ -16,8 +19,7 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
 def home():
     return {"message": " Welcome to the FitFlex API "}
 
-
-#Get current login user
+# Get current login user
 def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)) -> User:
     credentials_exception = HTTPException(
         status_code=401,
@@ -37,9 +39,7 @@ def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(
         raise credentials_exception
     return user
 
-
-
-#  Register a new user
+# Register a new user
 @router.post("/register")
 def register(user: schema.UserCreate, db: Session = Depends(get_db)):
     if crud.get_user_by_email(db, user.email):
@@ -66,103 +66,99 @@ def login(user: schema.UserLogin, db: Session = Depends(get_db)):
         "username": db_user.username
     }
 
-# Creation of new workout of current user
+# Simulated reset link sender
+@router.post("/reset-password-request")
+def reset_password_request(payload: ResetPasswordRequest, db: Session = Depends(get_db)):
+    user = db.query(models.User).filter(models.User.email == payload.email).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="Email not found.")
+    print(f"[DEV] Simulate sending reset link to: {payload.email}")
+    return {"message": "Reset link sent (simulated)."}
+
+# Password reset handler
+@router.post("/reset-password")
+def reset_password(data: ResetPasswordData, db: Session = Depends(get_db)):
+    user = db.query(models.User).filter(models.User.email == data.email).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found.")
+    pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+    user.password_hash = pwd_context.hash(data.new_password)
+    db.commit()
+    return {"message": "Password reset successfully."}
+
+# Create a new workout
 @router.post("/workouts")
-def create_workout(
-    workout: schema.WorkoutCreate,
-    db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user)
-):
+def create_workout(workout: schema.WorkoutCreate, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     return crud.create_workout(db, user_id=current_user.id, workout_data=workout)
 
-# Get workouts for current user
+# Get all workouts
 @router.get("/workouts")
-def get_workouts(
-    db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user)
-):
+def get_workouts(db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     return crud.get_user_workouts(db, user_id=current_user.id)
 
-#  Get one workout by ID
+# Get a specific workout
 @router.get("/workouts/{workout_id}")
-def get_workout(
-    workout_id: int,
-    db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user)
-):
+def get_workout(workout_id: int, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     workout = crud.get_workout_by_id(db, workout_id)
     if not workout or workout.user_id != current_user.id:
         raise HTTPException(status_code=404, detail="Workout not found")
     return workout
 
-#  Update a workout
+# Update a workout
 @router.put("/workouts/{workout_id}")
-def update_workout(
-    workout_id: int,
-    workout_data: schema.WorkoutCreate,
-    db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user)
-):
-    return crud.update_workout(db, workout_id, workout_data, current_user.id)
+def update_workout(workout_id: int, workout_data: schema.WorkoutUpdate, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+    updated_workout = crud.update_workout(db, workout_id, current_user.id, workout_data)
+    if not updated_workout:
+        raise HTTPException(status_code=404, detail="Workout not found")
+    return {"message": "Workout updated successfully", "workout_id": workout_id}
 
-#  Delete a workout
+# Delete a workout
 @router.delete("/workouts/{workout_id}")
-def delete_workout(
-    workout_id: int,
-    db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user)
-):
+def delete_workout(workout_id: int, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     return crud.delete_workout(db, workout_id, current_user.id)
 
-#  List all available exercises
+# Get all exercises
 @router.get("/exercises")
 def get_exercises(db: Session = Depends(get_db)):
     return db.query(models.Exercise).all()
 
-#  Seed sample exercises
+# Seed sample exercises
 @router.post("/seed-exercises")
 def seed_exercises(db: Session = Depends(get_db)):
-    unique_exercises = [
+    exercises = [
         {"name": "Squats", "category": "Strength", "description": "Lower body strength"},
         {"name": "Push-ups", "category": "Strength", "description": "Upper body strength"},
         {"name": "Jumping Jacks", "category": "Cardio", "description": "Full-body cardio warm-up"},
         {"name": "Plank", "category": "Core", "description": "Core stability"},
-        {"name": "Dumbbell Rows", "category": "Strength", "description": "Back and biceps strength"},
-        {"name": "Lunges", "category": "Strength", "description": "Leg strength and balance"},
-        {"name": "Leg Press", "category": "Strength", "description": "Lower body machine workout"},
-        {"name": "Deadlifts", "category": "Strength", "description": "Full body power exercise"},
-        {"name": "Calf Raises", "category": "Strength", "description": "Calf muscle isolation"},
-        {"name": "Bench Press", "category": "Strength", "description": "Chest and triceps strength"},
-        {"name": "Shoulder Press", "category": "Strength", "description": "Deltoid and triceps focus"},
-        {"name": "Pull-ups", "category": "Strength", "description": "Back and arm strength"},
-        {"name": "Bicep Curls", "category": "Strength", "description": "Bicep isolation exercise"},
-        {"name": "Tricep Dips", "category": "Strength", "description": "Triceps bodyweight exercise"},
-        {"name": "Sit-ups", "category": "Core", "description": "Abdominal exercise"},
-        {"name": "Russian Twists", "category": "Core", "description": "Oblique exercise"},
-        {"name": "Leg Raises", "category": "Core", "description": "Lower ab exercise"},
-        {"name": "Bicycle Crunches", "category": "Core", "description": "Dynamic core workout"},
-        {"name": "Burpees", "category": "HIIT", "description": "Full body explosive move"},
-        {"name": "Mountain Climbers", "category": "HIIT", "description": "Cardio and core activation"},
-        {"name": "Jump Squats", "category": "HIIT", "description": "Explosive lower body"},
-        {"name": "High Knees", "category": "HIIT", "description": "Cardio burst exercise"},
-        {"name": "Jump Rope", "category": "Cardio", "description": "Cardio endurance workout"},
-        {"name": "Running (Treadmill)", "category": "Cardio", "description": "Endurance training"},
-        {"name": "Rowing Machine", "category": "Cardio", "description": "Full body cardio machine"},
-        {"name": "Cycling", "category": "Cardio", "description": "Lower body cardio endurance"},
+        # Add more if needed
     ]
-
     added = 0
-    for ex in unique_exercises:
-        existing = db.query(models.Exercise).filter_by(name=ex["name"]).first()
-        if not existing:
+    for ex in exercises:
+        if not db.query(models.Exercise).filter_by(name=ex["name"]).first():
             db.add(models.Exercise(**ex))
             added += 1
-
     db.commit()
-    return {"message": f"{added} unique exercises seeded successfully."}
+    return {"message": f"{added} exercises seeded."}
 
-
-#  Get current user info
+# Get current user info
 @router.get("/me")
 def read_users_me(current_user: User = Depends(get_current_user)):
     return current_user
+
+# Dashboard stats
+@router.get("/dashboard/stats")
+def get_dashboard_stats(current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    total_workouts = db.query(models.Workout).filter(models.Workout.user_id == current_user.id).count()
+    total_exercises = db.query(models.WorkoutExercise).join(models.Workout).filter(models.Workout.user_id == current_user.id).count()
+    total_time_spent = db.query(func.sum(models.WorkoutExercise.duration)).join(models.Workout).filter(models.Workout.user_id == current_user.id).scalar() or 0
+    latest_workout = db.query(models.Workout).filter(models.Workout.user_id == current_user.id).order_by(models.Workout.date.desc()).first()
+
+    return {
+        "total_workouts": total_workouts,
+        "total_exercises": total_exercises,
+        "total_time_spent_minutes": total_time_spent,
+        "latest_workout": {
+            "name": latest_workout.name if latest_workout else None,
+            "date": latest_workout.date.strftime("%Y-%m-%d") if latest_workout else None
+        }
+    }
