@@ -8,7 +8,7 @@ from passlib.context import CryptContext
 from . import schema, crud, config, models
 from .schema import ResetPasswordRequest, ResetPasswordData
 from .config import get_db
-from .models import User, Exercise
+from .models import User, Workout, WorkoutExercise
 from sqlalchemy import func
 
 router = APIRouter()
@@ -127,45 +127,17 @@ def get_exercises(db: Session = Depends(get_db)):
 def seed_exercises(db: Session = Depends(get_db)):
     exercises = [
         {"name": "Squats", "category": "Strength", "description": "Lower body strength"},
-        {"name": "Push Ups", "category": "Strength", "description": "Upper body strength"},
+        {"name": "Push-ups", "category": "Strength", "description": "Upper body strength"},
         {"name": "Jumping Jacks", "category": "Cardio", "description": "Full-body cardio warm-up"},
         {"name": "Plank", "category": "Core", "description": "Core stability"},
-        {"name": "Dumbbell Rows", "category": "Strength", "description": "Back and biceps"},
-        {"name": "Lunges", "category": "Strength", "description": "Lower body strength"},
-        {"name": "Leg Press", "category": "Strength", "description": "Quadriceps and hamstrings"},
-        {"name": "Deadlifts", "category": "Strength", "description": "Lower back and leg strength"},
-        {"name": "Calf Raises", "category": "Strength", "description": "Calf muscles"},
-        {"name": "Bench Press", "category": "Strength", "description": "Upper body strength"},
-        {"name": "Shoulder Press", "category": "Strength", "description": "Shoulders and triceps"},
-        {"name": "Pull-ups", "category": "Strength", "description": "Upper back and biceps"},
-        {"name": "Bicep Curls", "category": "Strength", "description": "Arm strength"},
-        {"name": "Tricep Dips", "category": "Strength", "description": "Arm strength"},
-        {"name": "Sit-ups", "category": "Core", "description": "Abdominal strength"},
-        {"name": "Russian Twists", "category": "Core", "description": "Oblique strength"},
-        {"name": "Leg Raises", "category": "Core", "description": "Lower abs"},
-        {"name": "Bicycle Crunches", "category": "Core", "description": "Abdominal and oblique"},
-        {"name": "Burpees", "category": "Cardio", "description": "Full-body cardio exercise"},
-        {"name": "Mountain Climbers", "category": "Cardio", "description": "Full-body cardio exercise"},
-        {"name": "Jump Squats", "category": "Cardio", "description": "Legs and cardio"},
-        {"name": "High Knees", "category": "Cardio", "description": "Cardio endurance"},
-        {"name": "Jump Rope", "category": "Cardio", "description": "Cardio endurance"},
-        {"name": "Running (Treadmill)", "category": "Cardio", "description": "Cardio endurance"},
-        {"name": "Rowing Machine", "category": "Cardio", "description": "Full-body cardio"},
-        {"name": "Cycling", "category": "Cardio", "description": "Cardio endurance"},
     ]
     added = 0
     for ex in exercises:
-        if not db.query(models.Exercise).filter(func.lower(models.Exercise.name) == ex["name"].lower()).first():
+        if not db.query(models.Exercise).filter_by(name=ex["name"]).first():
             db.add(models.Exercise(**ex))
             added += 1
     db.commit()
     return {"message": f"{added} exercises seeded."}
-
-@router.delete("/exercises/delete-all")
-def delete_all_exercises(db: Session = Depends(get_db)):
-    deleted = db.query(models.Exercise).delete()
-    db.commit()
-    return {"message": f"{deleted} exercises deleted."}
 
 # Get current user info
 @router.get("/me")
@@ -189,3 +161,14 @@ def get_dashboard_stats(current_user: User = Depends(get_current_user), db: Sess
             "date": latest_workout.date.strftime("%Y-%m-%d") if latest_workout else None
         }
     }
+
+@router.get("/dashboard/time-by-type")
+def time_by_workout_name(db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+    results = (
+        db.query(Workout.name, func.sum(WorkoutExercise.duration).label("total_time"))
+        .join(WorkoutExercise, Workout.id == WorkoutExercise.workout_id)
+        .filter(Workout.user_id == current_user.id)
+        .group_by(Workout.name)
+        .all()
+    )
+    return [{"workoutType": r[0], "timeSpent": r[1]} for r in results]
