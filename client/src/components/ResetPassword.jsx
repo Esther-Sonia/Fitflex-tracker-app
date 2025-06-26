@@ -11,7 +11,7 @@ function ResetPassword() {
     setError('');
 
     try {
-      const response = await fetch('http://localhost:8000/reset-password-request', {
+      const response = await fetch('https://fitflex-tracker-app-backend.onrender.com/reset-password-request', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email }),
