@@ -8,15 +8,20 @@
 
 🌐 [Click here to try FitFlex](https://fitflex-tracker-app.onrender.com/)
 
----
+## Backend render link
+
+https://fitflex-tracker-app-backend.onrender.com
 
 ## 📸 Screenshots
 
-### 🏠 Landing Page
+
+### Login page
+![Landing Page](./client/public/loginpage.png)
+
+###  Home page
 ![Landing Page](./client/public/landingpage.png)
 
-
-### 📝 Workout Form
+###  Workout Form
 ![Workout Form](./client/public/Workoutform.png)
 
 ---
