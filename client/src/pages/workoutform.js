@@ -25,6 +25,9 @@ function NewWorkout() {
   const [exercises, setExercises] = useState([]);
   const [selectedExercises, setSelectedExercises] = useState([]);
   const [successMsg, setSuccessMsg] = useState('');
+  const [errorMsg, setErrorMsg] = useState('');
+  const [dateError, setDateError] = useState('');
+
 
   const workoutPresets = {
     "💥 Full Body Blast": ["Squats", "Push Ups", "Jumping Jacks", "Plank", "Dumbbell Rows"],
@@ -87,6 +90,12 @@ function NewWorkout() {
   function handleSubmit(e) {
     e.preventDefault();
 
+    if (!formData.date) {
+      setDateError("please select a workout date.");
+      setTimeout(() => setDateError(''), 4000);
+      return;
+    }
+
     function isTokenExpired(token) {
       try {
         const payload = JSON.parse(atob(token.split('.')[1]));
@@ -130,6 +139,9 @@ function NewWorkout() {
       })
       .catch((err) => {
         console.error('Error submitting workout:', err);
+        setErrorMsg('Failed to save workout. Please try again.');
+        setSuccessMsg('');
+        setTimeout(() => setErrorMsg(''), 4000);
       });
   }
 
@@ -236,6 +248,17 @@ function NewWorkout() {
             {successMsg}
           </div>
         )}
+         {errorMsg && (
+              <div className="bg-red-100 text-red-800 px-4 py-3 mb-6 text-center rounded-lg shadow">
+                {errorMsg}
+              </div>
+            )}
+
+            {dateError && (
+              <div className="bg-red-100 text-red-800 px-4 py-3 mb-6 text-center rounded-lg shadow">
+                {dateError}
+              </div>
+            )}
             <div className="pt-6">
               <button
                 onClick={handleSubmit}
