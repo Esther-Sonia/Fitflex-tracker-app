@@ -32,13 +32,14 @@ function ResetPassword() {
   return (
     <form onSubmit={handleReset} className="mt-4 space-y-2">
       <input
-        type="email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        placeholder="Enter your email"
-        className="w-full p-2 border rounded"
-        required
-      />
+  type="email"
+  value={email}
+  onChange={(e) => setEmail(e.target.value)}
+  placeholder="Enter your email"
+  className="w-full p-2 border rounded text-black placeholder-gray-500"
+  required
+/>
+
       <button
         type="submit"
         className="w-full bg-gray-700 text-white py-2 rounded hover:bg-gray-800"
